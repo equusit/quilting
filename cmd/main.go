@@ -43,9 +43,11 @@ func layout(w int, l int) {
 		chart[i] = getRandomColour(1, c)
 
 		if i > 1 && i < w && chart[i] == chart[i-1] {
-			chart[i] = getRandomColourWithBlacklist(1, c, chart[i])
+			s := []string{chart[i]}
+			chart[i] = getRandomColourWithBlacklist(1, c, s)
 		} else if i > w && chart[i] == chart[i-1] || chart[i] == chart[i-w] {
-			chart[i] = getRandomColourWithBlacklist(1, c, chart[i])
+			s := []string{chart[i], chart[i-w]}
+			chart[i] = getRandomColourWithBlacklist(1, c, s)
 		}
 	}
 }
@@ -59,13 +61,18 @@ func getRandomColour(min int, max int) string {
 	}
 }
 
-func getRandomColourWithBlacklist(min int, max int, blacklisted string) string {
+func getRandomColourWithBlacklist(min int, max int, blacklisted []string) string {
 	fmt.Println("RwB Min:", min, "RwB Max:", max, "RwB Blaclisted:", blacklisted)
+	excluded := map[string]bool{}
+	for _, x := range blacklisted {
+		excluded[x] = true
+	}
+
 	for {
 		n := rand.Intn(max-min) + min
 		c := Col[n]
 		fmt.Println(n, c)
-		if c != blacklisted {
+		if !excluded[c] {
 			return c
 		}
 	}
